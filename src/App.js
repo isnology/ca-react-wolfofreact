@@ -1,31 +1,49 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import StockInfo from './components/StockInfo'
+import { loadQuoteForStock } from './api/iex'
+
 
 class App extends Component {
   state = {
-    quote: {
-      symbol: 'NFLX',
-      companyName: 'Netflix Inc',
-      primaryExchange: 'Nasdaq Global exchange',
-      latestPrice: 188.5,
-      latestSource: 'Close',
-      week52High: 204.38,
-      week52Low: 113.95
-    }
+    error: null,
+    quote: null
   }
 
+  // the first time our component is rendered
+  // this method is called
+  componentDidMount() {
+    loadQuoteForStock('nflxxx')
+    .then((quote) => {
+      this.setState({ quote: quote })
+    })
+    .catch((error) => {
+      if (error.response.status === 404)
+        error = new Error('The stock symbol does not exist')
+      this.setState({ error: error })
+      console.error('Error loading quote', error)
+    })
+  }
 
   render() {
-    const { quote } = this.state
+    const { error, quote } = this.state
 
     return (
       <div className="App">
         <h1>Wolf Of React</h1>
-        <StockInfo
-          { ...quote }   // flattern object
-        />
+        { !!error &&
+          <p>{ error.message }</p>
+        }
+        {
+          !!quote ? (
+            <StockInfo
+              { ...quote }   // flattern object
+            />
+          ) : (
+            <p>Loading...</p>
+          )
+        }
+
       </div>
     );
   }
