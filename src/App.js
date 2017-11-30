@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import './App.css';
 import StockInfo from './components/StockInfo'
-import { loadQuoteForStock } from './api/iex'
+import { loadQuoteForStock, loadLogo } from './api/iex'
 
 
 class App extends Component {
   state = {
     error: null,
     enteredSymbol: 'NFLX',
+    logoUrl: null,
     quote: null
   }
 
@@ -22,13 +23,18 @@ class App extends Component {
 
     loadQuoteForStock(enteredSymbol)
     .then((quote) => {
-      this.setState({ quote: quote, error: null })
+      this.setState({ error: null, quote: quote })
     })
     .catch((error) => {
       if (error.response.status === 404)
         error = new Error(`The stock symbol '${ enteredSymbol }' does not exist`)
       this.setState({ error: error })
       console.error('Error loading quote', error)
+    })
+
+    loadLogo(enteredSymbol)
+    .then((logoUrl) => {
+      this.setState({ logoUrl: logoUrl })
     })
   }
 
@@ -39,7 +45,7 @@ class App extends Component {
   }
 
   render() {
-    const { error, enteredSymbol, quote } = this.state
+    const { error, enteredSymbol, logoUrl, quote } = this.state
 
     return (
       <div className="App">
@@ -64,7 +70,8 @@ class App extends Component {
         {
           !!quote ? (
             <StockInfo
-              { ...quote }   // flattern object
+                logoUrl={ logoUrl }
+                { ...quote }   // flattern object
             />
           ) : (
             <p>Loading...</p>
