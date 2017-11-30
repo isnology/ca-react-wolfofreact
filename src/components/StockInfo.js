@@ -1,14 +1,14 @@
 import React from 'react'
 
 function StockInfo({
-                     logoUrl,
                      symbol,          // NFLX
                      companyName,     // Netflix Inc
                      primaryExchange, // Nasdaq Global exchange
                      latestPrice,
                      latestSource,
                      week52High,
-                     week52Low
+                     week52Low,
+                     logoUrl
                    }) {
   return (
       <div>
@@ -19,7 +19,7 @@ function StockInfo({
         <dl>
           <dt>Week 52 high</dt>
           <dd>{ week52High }</dd>
-
+          <br />
           <dt>Week 52 Low</dt>
           <dd>{ week52Low }</dd>
         </dl>
